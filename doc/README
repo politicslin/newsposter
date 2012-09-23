@@ -1,0 +1,4 @@
+python $HOME/bin/google_appengine/dev_appserver.py $HOME/workspace-gae/newsposter/src --port 8082
+
+python $HOME/bin/google_appengine/appcfg.py update $HOME/workspace-gae/newsposter/src
+
