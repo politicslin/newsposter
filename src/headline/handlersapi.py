@@ -36,16 +36,16 @@ def _distribute2twitter(content):
 
     _distribute(url, comsumerkey, comsumersecret, accesstoken, accesssecret, httpmethod, postbody, proxyinfo)
 
-def _distributeItem(item):
+def _distributeItem(source, content, url):
     lines = []
-    itemtitle = item.get('title')
-    if itemtitle:
-        lines.append(itemtitle)
-    itemurl = item.get('url')
-    if itemurl:
-        lines.append(itemurl)
-    content = ' '.join(lines)
-    _distribute2twitter(content) 
+    if source:
+        lines.append(source)
+    if content:
+        lines.append(content)
+    if url:
+        lines.append(url)
+    data = ' '.join(lines)
+    _distribute2twitter(data) 
 
 class PosterRequest(webapp2.RequestHandler):
     def post(self):
@@ -58,10 +58,11 @@ class PosterRequest(webapp2.RequestHandler):
 
 class PosterResponse(webapp2.RequestHandler):
     def post(self):
-        items = json.loads(self.request.body)
+        data = json.loads(self.request.body)
+        sourcename = data['source'].get('name')
+        items = data['items']
         for item in items:
-            _distributeItem(item)
-
+            _distributeItem(sourcename, item.get('title'), item.get('url'))
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write('Response is generated.')
+        self.response.out.write('Published %s.' % (sourcename, ))
 
