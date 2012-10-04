@@ -37,17 +37,17 @@ class PosterRequest(webapp2.RequestHandler):
 class PosterResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
-        datasouce = data.get('source', data.get('datasource'))
+        datasouce = data['datasource']
+        items = data['items']
+
         sourceslug = datasouce.get('slug')
         sourcetags = datasouce.get('tags')
-        items = data['items']
-        # put the failed item into another queue?
         posters = cpapi.getPosters(sourceslug, sourcetags)
         for item in items:
             for poster in posters:
                 if not poster.publish(datasouce, item):
                     _put2FailQueue(1, poster.slug, datasouce, item)
-        message = 'Published %s to %s posters.' % (sourceslug, len(posters), )
+        message = 'Publish %s to %s posters.' % (sourceslug, len(posters), )
         logging.info(message)
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write(message)

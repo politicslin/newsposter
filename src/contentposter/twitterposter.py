@@ -21,7 +21,7 @@ class TwitterPoster(object):
         reserved4separator = 5
         sourcename = datasouce.get('name')
         itemtitle = item.get('title', '')
-        maxTitleLen = maxcontentlen - len(sourcename) - maxcontentlen - separator
+        maxTitleLen = maxcontentlen - len(sourcename) - reserved4url - reserved4separator
         return "%s: %s %s" % (
             sourcename,
             itemtitle[:maxTitleLen],
@@ -41,13 +41,15 @@ class TwitterPoster(object):
         client = oauth.Client(consumer, token, proxy_info=proxyinfo)
         success = True
         try:
-            result = client.request(
+            resp, content = client.request(
                            url,
                            method=httpmethod,
                            body=postbody,
                            headers=None
             )
-            logging.info('return value: %s' % (result, ))
+            if resp.get('reason') != 'OK' or content.get('error'):
+                # I do not know should the request be retried.
+                logging.error('return value: %s, %s' % (resp, content, ))
         except:
             success = False
             logging.exception('Failed to pubsh content to %s.' % (self.slug, ))
