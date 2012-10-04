@@ -1,6 +1,7 @@
 import logging
 import urllib2
 import oauth2 as oauth
+import json
 
 class TwitterPoster(object):
 
@@ -41,15 +42,22 @@ class TwitterPoster(object):
         client = oauth.Client(consumer, token, proxy_info=proxyinfo)
         success = True
         try:
-            resp, content = client.request(
+            responsehead, responsebody = client.request(
                            url,
                            method=httpmethod,
                            body=postbody,
                            headers=None
             )
-            if resp.get('reason') != 'OK' or content.get('error'):
-                # I do not know should the request be retried.
-                logging.error('return value: %s, %s' % (resp, content, ))
+            # I do not know when should the request be retried.
+            published = True
+            if responsehead.get('reason') != 'OK':
+                published = False
+            else:
+                responsebodyItem = json.loads(responsebody)
+                if responsebodyItem.get('error'):
+                    published = False
+            if not published:
+                logging.error('return value: %s, %s' % (responsehead, responsebody,))
         except:
             success = False
             logging.exception('Failed to pubsh content to %s.' % (self.slug, ))
