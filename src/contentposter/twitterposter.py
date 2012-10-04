@@ -57,9 +57,10 @@ class TwitterPoster(object):
                 if responsebodyItem.get('error'):
                     published = False
             if not published:
-                logging.error('return value: %s, %s' % (responsehead, responsebody,))
+                logging.error('Content: %s, return value: %s, %s. ' % (
+                                content, responsehead, responsebody,))
         except:
             success = False
-            logging.exception('Failed to pubsh content to %s.' % (self.slug, ))
+            logging.exception('Failed to pubsh %s to %s.' % (content, self.slug, ))
         return success
 
