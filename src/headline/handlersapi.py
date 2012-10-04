@@ -23,13 +23,13 @@ def _put2FailQueue(triedcount, posterslug, datasource, item):
         'item': item,
         'tredcount': triedcount,
       }
-    taskqueue.add(queue_name='fail', payload=json.dumps(data), url='/api/headline/poster/fail')
+    taskqueue.add(queue_name='default', payload=json.dumps(data), url='/api/headline/poster/fail')
 
 class PosterRequest(webapp2.RequestHandler):
     def post(self):
         rawdata = self.request.body
         # Use queue so we have a longer deadline.
-        taskqueue.add(queue_name='headline', payload=rawdata, url='/api/headline/poster/response')
+        taskqueue.add(queue_name='default', payload=rawdata, url='/api/headline/poster/response')
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Request is accepted.')
 
