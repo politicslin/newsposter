@@ -4,4 +4,7 @@ queue:
 - name: headline
   rate: 1/s
   bucket_size: 10
+- name: fail
+  rate: 1/s
+  bucket_size: 10
 

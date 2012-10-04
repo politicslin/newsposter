@@ -1,0 +1,14 @@
+poster-list: [
+{
+  "type": "twitter",
+  "slug": "tt.headlinechina",
+  "comsumerkey": "Z0gscpxJz4Jz8kGDmielxA",
+  "comsumersecret": "aXGuWtLK3WhZcg0xuzn4ldQpNBdLNavuAFNvefN6Pc",
+  "accesstoken": "17037491-ZgFJGdCC8DJNoN8VvNZ9CVhWBiLSrUSYNZsSc7eY",
+  "accesssecret": "lKCqFnSY4c7PiIJVZ3iXe4Sp7V9bbP3wDIcMhdsCZ3I",
+  "targetslugs": "all",
+  "targettags": "",
+  "active": true
+}
+]
+

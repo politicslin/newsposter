@@ -3,49 +3,27 @@ import json
 import logging
 import urllib2
 
-import oauth2 as oauth
-
 from google.appengine.api import taskqueue
 
 import webapp2
+import oauth2 as oauth
 
-def _distribute(url, self_comsumer_key, self_comsumer_secret, self_access_token, self_access_token_secret, 
-             http_method='GET', post_body='', proxy_info=None):
-    consumer = oauth.Consumer(key=self_comsumer_key, secret=self_comsumer_secret)
-    token = oauth.Token(key=self_access_token, secret=self_access_token_secret)
-    client = oauth.Client(consumer, token, proxy_info=proxy_info)
-    resp, content = client.request(
-        url,
-        method=http_method,
-        body=post_body,
-        headers=None
-    )
-    return content
+from contentposter import cpapi
 
-def _distribute2twitter(content):
-    url = 'http://api.twitter.com/1/statuses/update.json'
-    comsumerkey = 'Z0gscpxJz4Jz8kGDmielxA'
-    comsumersecret = 'aXGuWtLK3WhZcg0xuzn4ldQpNBdLNavuAFNvefN6Pc'
-    accesstoken = '17037491-ZgFJGdCC8DJNoN8VvNZ9CVhWBiLSrUSYNZsSc7eY'
-    accesssecret = 'lKCqFnSY4c7PiIJVZ3iXe4Sp7V9bbP3wDIcMhdsCZ3I'
+_MAX_TRY_COUNT = 5
 
-    httpmethod = 'POST'
-    postbody = 'status=' +  urllib2.quote(content.encode('utf-8'))
-
-    proxyinfo = None
-
-    _distribute(url, comsumerkey, comsumersecret, accesstoken, accesssecret, httpmethod, postbody, proxyinfo)
-
-def _distributeItem(source, content, url):
-    lines = []
-    if source:
-        lines.append(source)
-    if content:
-        lines.append(content)
-    if url:
-        lines.append(url)
-    data = ' '.join(lines)
-    _distribute2twitter(data) 
+def _put2FailQueue(triedcount, posterslug, datasource, item):
+    if triedcount >= _MAX_TRY_COUNT:
+        logging.error('Failed to publish %s to %s for %s.' % (item.get('url'),
+             posterslug, datasource.get('slug')))
+        return
+    data = {
+        'posterslug': posterslug,
+        'datasource': datasource,
+        'item': item,
+        'tredcount': triedcount,
+      }
+    taskqueue.add(queue_name='fail', payload=json.dumps(data), url='/api/headline/poster/fail')
 
 class PosterRequest(webapp2.RequestHandler):
     def post(self):
@@ -59,10 +37,39 @@ class PosterRequest(webapp2.RequestHandler):
 class PosterResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
-        sourcename = data['source'].get('name')
+        datasouce = data.get('source', data.get('datasource'))
+        sourceslug = datasouce.get('slug')
+        sourcetags = datasouce.get('tags')
         items = data['items']
+        # put the failed item into another queue?
+        posters = cpapi.getPosters(sourceslug, sourcetags)
         for item in items:
-            _distributeItem(sourcename, item.get('title'), item.get('url'))
+            for poster in posters:
+                if not poster.publish(datasouce, item):
+                    _put2FailQueue(1, poster.slug, datasouce, item)
+        message = 'Published %s to %s posters.' % (sourceslug, len(posters), )
+        logging.info(message)
         self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write('Published %s.' % (sourcename, ))
+        self.response.out.write(message)
+
+
+class PosterFail(webapp2.RequestHandler):
+    def post(self):
+        data = json.loads(self.request.body)
+        posterslug = data['posterslug']
+        datasource = data['datasource']
+        item = data['item']
+        tredcount = data['tredcount']
+        poster = cpapi.getPoster(posterslug)
+        if poster:
+            if poster.publish(datasource, item):
+                message = 'Publish %s to %s.' % (datasource.get('slug'), posterslug, )
+            else:
+                _put2FailQueue(tredcount + 1, poster.slug, datasource, item)
+                message = 'Failed to publish %s to %s.' % (datasource.get('slug'), posterslug, )
+        else:
+            message = '%s is not available.' % (posterslug, )
+        logging.info(message)
+        self.response.headers['Content-Type'] = 'text/plain'
+        self.response.out.write(message)
 
