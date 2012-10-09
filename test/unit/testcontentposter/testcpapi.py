@@ -10,7 +10,7 @@ class TestCpApi(unittest.TestCase):
 
     def testIsMatched(self):
         slug = 'slug1'
-        tags = 'tag1,tag2'
+        tags = ['tag1', 'tag2']
 
         self.assertFalse(cpapi._isMatched(slug, tags, '', ''))
 

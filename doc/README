@@ -1,4 +1,8 @@
-python $HOME/bin/google_appengine/dev_appserver.py $HOME/workspace-gae/newsposter/src --port 8082
-
+python $HOME/bin/google_appengine/appcfg.py  --help
 python $HOME/bin/google_appengine/appcfg.py update $HOME/workspace-gae/newsposter/src
+
+# Upload by GoAgent uploader
+export uploaddir=$HOME/workspace-gae/newsposter/src
+export PYTHONPATH="$HOME/bin/goagent-goagent-1aedcc6/local:$PYTHONPATH"
+python /home/hyman/bin/goagent-goagent-1aedcc6/server/uploader/appcfg_news.py
 

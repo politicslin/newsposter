@@ -1,0 +1,15 @@
+poster-list:
+[
+{
+  "type": "twitter",
+  "slug": "slug1",
+  "comsumerkey": "a",
+  "comsumersecret": "a",
+  "accesstoken": "a",
+  "accesssecret": "a",
+  "targetslugs": "all",
+  "targettags": "",
+  "active": true
+}
+]
+

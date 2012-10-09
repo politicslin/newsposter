@@ -12,10 +12,6 @@ def _getPosters():
     return result
 
 def _isMatched(slug, tags, targetslugs, targettags):
-    if tags:
-        tags = tags.split(',')
-    else:
-        tags = []
     if targetslugs:
         targetslugs = targetslugs.split(',')
         if 'all' in targetslugs:
