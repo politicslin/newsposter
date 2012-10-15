@@ -21,7 +21,9 @@ class TwitterPoster(object):
         reserved4url = 20
         reserved4separator = 5
         sourcename = datasouce.get('name')
-        itemtitle = item.get('title', '')
+        itemtitle = item.get('title')
+        if itemtitle is None:
+            itemtitle = ''
         maxTitleLen = maxcontentlen - len(sourcename) - reserved4url - reserved4separator
         return "%s: %s %s" % (
             sourcename,
