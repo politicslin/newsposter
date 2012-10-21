@@ -7,8 +7,8 @@ poster-list:
   "comsumersecret": "a",
   "accesstoken": "a",
   "accesssecret": "a",
-  "targetslugs": "all",
-  "targettags": "",
+  "targettopic": "",
+  "targettags": "all",
   "active": true
 }
 ]

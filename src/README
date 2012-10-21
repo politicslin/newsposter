@@ -1,9 +1,10 @@
 UTIL_PROJECT_SRC=$HOME/workspace-python/python-commonutil/src
+FUNCTION_PROJECT_SRC=$HOME/workspace-gae/commonfunction/src
 LIBRARY_SRC=$HOME/workspace-gae/newsposter/src/library
 
 mkdir $LIBRARY_SRC
 
-ln -s $UTIL_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
+ln -s $FUNCTION_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
 ln -s $UTIL_PROJECT_SRC/jsonpickle $LIBRARY_SRC/jsonpickle
 
 ln -s $UTIL_PROJECT_SRC/oauth2 $LIBRARY_SRC/oauth2

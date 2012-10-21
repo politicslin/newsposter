@@ -41,8 +41,9 @@ class PosterResponse(webapp2.RequestHandler):
         items = data['items']
 
         sourceslug = datasouce.get('slug')
+        topic = datasouce.get('topic')
         sourcetags = datasouce.get('tags')
-        posters = cpapi.getPosters(sourceslug, sourcetags)
+        posters = cpapi.getPosters(topic, sourcetags)
         for item in items:
             for poster in posters:
                 if not poster.publish(datasouce, item):

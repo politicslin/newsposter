@@ -11,22 +11,16 @@ def _getPosters():
             result.append(poster)
     return result
 
-def _isMatched(slug, tags, targetslugs, targettags):
-    if targetslugs:
-        targetslugs = targetslugs.split(',')
-        if 'all' in targetslugs:
-            return True
-        for targetslug in targetslugs:
-            if targetslug in slug:
-                return True
+def _matchByTopic(topic, targettopics):
+    if targettopics:
+        return topic in targettopics.split(',')
+    return True
+
+def _matchByTag(tags, targettags):
     if targettags:
-        targettags = targettags.split(',')
-        if 'all' in targettags:
-            return True
-        for targettag in targettags:
-            if targettag in tags:
-                return True
-    return False
+        targettags = set(targettags.split(','))
+        return not targettags.isdisjoint(tags)
+    return True
 
 def _getRealPoster(poster):
     if poster.get('type') == 'twitter':
@@ -40,13 +34,19 @@ def _getRealPoster(poster):
           )
     return None
 
-def getPosters(slug, tags):
+def getPosters(topic, tags):
+    if tags:
+        tags = set(tags)
+    else:
+        tags = set()
     posters = _getPosters()
     result = []
     for poster in posters:
-        targetslugs = poster.get('targetslugs')
+        targettopics = poster.get('targettopics')
+        if not _matchByTopic(topic, targettopics):
+            continue
         targettags = poster.get('targettags')
-        if not _isMatched(slug, tags, targetslugs, targettags):
+        if not _matchByTag(tags, targettags):
             continue
         realposter = _getRealPoster(poster)
         if realposter:
