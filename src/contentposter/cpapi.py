@@ -14,12 +14,12 @@ def _getPosters():
 def _matchBySource(source, targetsources):
     if targetsources:
         return source in targetsources.split(',')
-    return True
+    return False
 
 def _matchByTopic(topic, targettopics):
     if targettopics:
         return topic in targettopics.split(',')
-    return True
+    return False
 
 def _matchByTag(tags, targettags):
     if targettags:
@@ -28,8 +28,7 @@ def _matchByTag(tags, targettags):
             grouptags = set(item.split('+'))
             if grouptags.issubset(tags):
                 return True
-        return False
-    return True
+    return False
 
 def _getRealPoster(poster):
     if poster.get('type') == 'twitter':
