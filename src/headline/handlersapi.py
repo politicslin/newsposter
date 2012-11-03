@@ -40,15 +40,15 @@ class PosterResponse(webapp2.RequestHandler):
         datasouce = data['datasource']
         items = data['items']
 
-        sourceslug = datasouce.get('slug')
         topic = datasouce.get('topic')
+        sourceSlug = '.'.join([topic, datasouce.get('slug')])
         sourcetags = datasouce.get('tags')
-        posters = cpapi.getPosters(topic, sourcetags)
+        posters = cpapi.getPosters(topic, sourceSlug, sourcetags)
         for item in items:
             for poster in posters:
                 if not poster.publish(datasouce, item):
                     _put2FailQueue(1, poster.slug, datasouce, item)
-        message = 'Publish %s to %s posters.' % (sourceslug, len(posters), )
+        message = 'Publish %s to %s posters.' % (sourceSlug, len(posters), )
         logging.info(message)
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write(message)

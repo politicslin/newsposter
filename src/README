@@ -4,8 +4,9 @@ LIBRARY_SRC=$HOME/workspace-gae/newsposter/src/library
 
 mkdir $LIBRARY_SRC
 
-ln -s $FUNCTION_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
 ln -s $UTIL_PROJECT_SRC/jsonpickle $LIBRARY_SRC/jsonpickle
+ln -s $FUNCTION_PROJECT_SRC/commonutil $LIBRARY_SRC/commonutil
+ln -s $FUNCTION_PROJECT_SRC/configmanager $LIBRARY_SRC/configmanager
 
 ln -s $UTIL_PROJECT_SRC/oauth2 $LIBRARY_SRC/oauth2
 ln -s $UTIL_PROJECT_SRC/httplib2 $LIBRARY_SRC/httplib2

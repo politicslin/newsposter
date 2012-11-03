@@ -11,6 +11,11 @@ def _getPosters():
             result.append(poster)
     return result
 
+def _matchBySource(source, targetsources):
+    if targetsources:
+        return source in targetsources.split(',')
+    return True
+
 def _matchByTopic(topic, targettopics):
     if targettopics:
         return topic in targettopics.split(',')
@@ -18,8 +23,12 @@ def _matchByTopic(topic, targettopics):
 
 def _matchByTag(tags, targettags):
     if targettags:
-        targettags = set(targettags.split(','))
-        return not targettags.isdisjoint(tags)
+        items = targettags.split(',')
+        for item in items:
+            grouptags = set(item.split('+'))
+            if grouptags.issubset(tags):
+                return True
+        return False
     return True
 
 def _getRealPoster(poster):
@@ -34,7 +43,7 @@ def _getRealPoster(poster):
           )
     return None
 
-def getPosters(topic, tags):
+def getPosters(topic, datasource, tags):
     if tags:
         tags = set(tags)
     else:
@@ -42,15 +51,22 @@ def getPosters(topic, tags):
     posters = _getPosters()
     result = []
     for poster in posters:
-        targettopics = poster.get('targettopics')
-        if not _matchByTopic(topic, targettopics):
-            continue
-        targettags = poster.get('targettags')
-        if not _matchByTag(tags, targettags):
-            continue
-        realposter = _getRealPoster(poster)
-        if realposter:
-            result.append(realposter)
+        targettopics = poster.get('targettopic')
+        matched = False
+        if _matchByTopic(topic, targettopics):
+            matched = True
+        if not matched:
+            targetsources = poster.get('targetsource')
+            if _matchBySource(datasource, targetsources):
+                matched = True
+        if not matched:
+            targettags = poster.get('targettag')
+            if _matchByTag(tags, targettags):
+                matched = True
+        if matched:
+            realposter = _getRealPoster(poster)
+            if realposter:
+                result.append(realposter)
     return result
 
 def getPoster(posterslug):

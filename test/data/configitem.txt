@@ -1,15 +1,16 @@
 poster-list:
 [
-{
-  "type": "twitter",
-  "slug": "slug1",
-  "comsumerkey": "a",
-  "comsumersecret": "a",
-  "accesstoken": "a",
-  "accesssecret": "a",
-  "targettopic": "",
-  "targettags": "all",
-  "active": true
-}
+    {
+        "accesssecret": "a", 
+        "accesstoken": "a", 
+        "active": true, 
+        "comsumerkey": "a", 
+        "comsumersecret": "a", 
+        "slug": "slug1", 
+        "targetsource": "topic1.source1", 
+        "targettag": "tag1+tag2,tag3", 
+        "targettopic": "topic2", 
+        "type": "twitter"
+    }
 ]
 

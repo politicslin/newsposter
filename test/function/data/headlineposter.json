@@ -6,8 +6,10 @@ http://informationposter.appspot.com/api/headline/poster/response
 
 {
 "datasource": {
-"slug": "qq",
-"name": "QQ"
+"slug": "source1",
+"name": "QQ",
+"topic": "topic3",
+"tags": ["tag1"]
 }, 
 "items": 
 [

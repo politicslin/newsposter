@@ -13,8 +13,9 @@ class TestCpApi(unittest.TestCase):
 
         self.assertTrue(cpapi._matchByTag(tags, ''))
         self.assertTrue(cpapi._matchByTag(tags, 'tag1'))
-        self.assertTrue(cpapi._matchByTag(tags, 'tag1,tag-n'))
-        self.assertFalse(cpapi._matchByTag(tags, 'tag-n'))
+        self.assertTrue(cpapi._matchByTag(tags, 'tag1+tag2'))
+        self.assertFalse(cpapi._matchByTag(tags, 'tag1+tagn'))
+        self.assertFalse(cpapi._matchByTag(tags, 'tagn'))
 
 
 if __name__ == '__main__':
