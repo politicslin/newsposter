@@ -22,6 +22,7 @@ app = webapp2.WSGIApplication([
 ('/api/headline/poster/response', headline.handlersapi.PosterResponse),
 ('/api/headline/poster/fail', headline.handlersapi.PosterFail),
 ('/admin/poster/test/', headline.handlersadmin.TestPage),
+('/admin/poster/', headline.handlersadmin.AdminPage),
 ],
                               debug=True)
 

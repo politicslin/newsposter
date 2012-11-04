@@ -1,0 +1,43 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Poster admin</title>
+</head>
+  <body>
+    <form action="/admin/poster/" method="POST">
+    <select name="selectedslug">
+      <option value="">--</option>
+      {% for item in posters %}
+      <option value="{{ item.slug }}" {% if item.slug == poster.slug %}selected{% endif %}>{{ forloop.counter}}. {{ item.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" name="action" value="Query" />
+    <br/>Slug: <input type="text" name="slug" value="{{ poster.slug }}" size="30"/>
+    Name: <input type="text" name="name" value="{{ poster.name }}" size="30"/>
+    <br/>Active: <input type="checkbox" name="active" {% if poster.active %} checked {% endif %}/>
+    <select name="type">
+      {% for posterType in posterTypes %}
+      <option value="{{ posterType }}" {% if poster.type == posterType %}selected{% endif %}>{{ posterType }}</option>
+      {% endfor %}
+    </select>
+    <br/>Access token: <input type="text" size="80" name="accesstoken"
+        value="{{ poster.accesstoken }}" />
+    <br/>Access secret: <input type="text" size="80" name="accesssecret"
+        value="{{ poster.accesssecret }}" />
+    <br/>Comsumer key: <input type="text" size="80" name="comsumerkey"
+        value="{{ poster.comsumerkey }}" />
+    <br/>Comsumer secret: <input type="text" size="80" name="comsumersecret"
+        value="{{ poster.comsumersecret }}" />
+    <br/>Target source: <input type="text" size="80" name="targetsource"
+        value="{{ poster.targetsource }}" />
+    <br/>Target tag: <input type="text" size="80" name="targettag"
+        value="{{ poster.targettag }}" />
+    <br/>Target topic: <input type="text" size="80" name="targettopic"
+        value="{{ poster.targettopic }}" />
+    <br/><input type="submit" name="action" value="Remove" />
+    <input type="submit" name="action" value="Save" />
+    </form>
+    {% if message %}{{ message }}{% endif %}
+  </body>
+</html>
+

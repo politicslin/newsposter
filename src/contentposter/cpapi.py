@@ -1,9 +1,12 @@
 from configmanager import cmapi
 from .twitterposter import TwitterPoster
 
+def _getPosterListKey():
+    return 'poster-list'
+
 def getAllPosters(onlyActive=True):
     result = []
-    posters = cmapi.getItemValue('poster-list')
+    posters = cmapi.getItemValue(_getPosterListKey())
     if not posters:
         return result
     if not onlyActive:
@@ -12,6 +15,9 @@ def getAllPosters(onlyActive=True):
         if poster.get('active', True):
             result.append(poster)
     return result
+
+def savePosters(posters):
+    return cmapi.saveItem(_getPosterListKey(), posters)
 
 def _matchBySource(source, targetsources):
     if targetsources:
