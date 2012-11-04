@@ -64,5 +64,7 @@ class TwitterPoster(object):
         except:
             success = False
             logging.exception('Failed to pubsh %s to %s.' % (content, self.slug, ))
+        if success and responsebody:
+            return responsebody
         return success
 

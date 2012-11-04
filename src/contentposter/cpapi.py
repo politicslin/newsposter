@@ -1,11 +1,13 @@
 from configmanager import cmapi
 from .twitterposter import TwitterPoster
 
-def _getPosters():
+def getAllPosters(onlyActive=True):
     result = []
     posters = cmapi.getItemValue('poster-list')
     if not posters:
         return result
+    if not onlyActive:
+        return posters
     for poster in posters:
         if poster.get('active', True):
             result.append(poster)
@@ -47,7 +49,7 @@ def getPosters(topic, datasource, tags):
         tags = set(tags)
     else:
         tags = set()
-    posters = _getPosters()
+    posters = getAllPosters()
     result = []
     for poster in posters:
         targettopics = poster.get('targettopic')
@@ -69,7 +71,7 @@ def getPosters(topic, datasource, tags):
     return result
 
 def getPoster(posterslug):
-    posters = _getPosters()
+    posters = getAllPosters()
     for poster in posters:
         if poster.get('slug') == posterslug:
             return _getRealPoster(poster)

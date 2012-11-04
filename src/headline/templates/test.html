@@ -1,0 +1,25 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Poster test</title>
+</head>
+  <body>
+    <form action="/admin/poster/test/" method="POST">
+    <select name="poster">
+      <option value="">--</option>
+      {% for poster in posters %}
+      <option value="{{ poster.slug }}" {% if poster.slug == posterSlug %}selected{% endif %}>{{ forloop.counter}}. {{ poster.name }}</option>
+      {% endfor %}
+    </select>
+    <br/>Datasource: <input type="text" size="80" name="datasource"
+       value="{{ datasource }}" />
+    <br/>Title: <input type="text" size="80" name="title"
+       value="{{ title }}" />
+    <br/>URL: <input type="text" size="80" name="url"
+       value="{{ url }}" />
+    <input type="submit" value="POST" />
+    </form>
+    {% if message %}{{ message }}{% endif %}
+  </body>
+</html>
+

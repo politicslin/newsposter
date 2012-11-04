@@ -1,12 +1,9 @@
-import httplib2
 import json
 import logging
-import urllib2
 
 from google.appengine.api import taskqueue
 
 import webapp2
-import oauth2 as oauth
 
 from contentposter import cpapi
 
