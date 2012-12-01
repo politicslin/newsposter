@@ -5,9 +5,31 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
+from commonutil import stringutil
+from configmanager import cmapi
+import globalconfig
 from contentposter import cpapi
 
 _MAX_TRY_COUNT = 5
+
+def isItemInCache(item):
+    hashkey = '.itemhash'
+    hashes = cmapi.getItemValue(hashkey, [])
+    lines = []
+    url = item.get('url')
+    if url:
+        lines.append(url)
+    title = item.get('title')
+    if title:
+        lines.append(title)
+    hvalue = stringutil.calculateHash(lines)
+    if hvalue in hashes:
+        return True
+    hashes.insert(0, hvalue)
+    hashcount = globalconfig.getMaxItemHash4Cache()
+    hashes = hashes[:hashcount]
+    cmapi.saveItem(hashkey, hashes)
+    return False
 
 def _put2FailQueue(triedcount, posterslug, datasource, item):
     if triedcount >= _MAX_TRY_COUNT:
@@ -20,13 +42,13 @@ def _put2FailQueue(triedcount, posterslug, datasource, item):
         'item': item,
         'tredcount': triedcount,
       }
-    taskqueue.add(queue_name='default', payload=json.dumps(data), url='/api/headline/poster/fail')
+    taskqueue.add(queue_name='default', payload=json.dumps(data), url='/poster/fail/')
 
 class PosterRequest(webapp2.RequestHandler):
     def post(self):
         rawdata = self.request.body
         # Use queue so we have a longer deadline.
-        taskqueue.add(queue_name='default', payload=rawdata, url='/api/headline/poster/response')
+        taskqueue.add(queue_name='default', payload=rawdata, url='/poster/response/')
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write('Request is accepted.')
 
@@ -42,6 +64,9 @@ class PosterResponse(webapp2.RequestHandler):
         sourcetags = datasouce.get('tags')
         posters = cpapi.getPosters(topic, sourceSlug, sourcetags)
         for item in items:
+            if isItemInCache(item):
+                logging.info('Item/%s is already in cache.' % (item, ))
+                continue
             for poster in posters:
                 if not poster.publish(datasouce, item):
                     _put2FailQueue(1, poster.slug, datasouce, item)

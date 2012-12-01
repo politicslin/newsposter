@@ -1,8 +1,8 @@
-http://localhost:8082/api/headline/poster/request
+http://localhost:8082/api/poster/request/
 
-http://localhost:8082/api/headline/poster/response
+http://localhost:8082/poster/response/
 
-http://informationposter.appspot.com/api/headline/poster/response
+http://informationposter.appspot.com/poster/response/
 
 {
 "datasource": {

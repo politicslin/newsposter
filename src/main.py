@@ -17,10 +17,10 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/configitem', configmanager.handlers.MainPage),
-('/api/headline/poster/request', headline.handlersapi.PosterRequest),
-('/api/headline/poster/response', headline.handlersapi.PosterResponse),
-('/api/headline/poster/fail', headline.handlersapi.PosterFail),
+('/configitem/', configmanager.handlers.MainPage),
+('/api/poster/request/', headline.handlersapi.PosterRequest),
+('/poster/response/', headline.handlersapi.PosterResponse),
+('/poster/fail/', headline.handlersapi.PosterFail),
 ('/admin/poster/test/', headline.handlersadmin.TestPage),
 ('/admin/poster/', headline.handlersadmin.AdminPage),
 ],
