@@ -17,7 +17,7 @@ class SitePoster(BasePoster):
 
     def publish(self, datasource, items):
         data = {
-                'origin': datasource,
+                'datasource': datasource,
                 'items': items,
             }
         try:

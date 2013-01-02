@@ -6,7 +6,7 @@ http://localhost:8084/poster/response/
 "datasource": {
 "slug": "source1",
 "name": "QQ",
-"topic": "topic3",
+"topic": "topic1",
 "tags": ["tag1"]
 }, 
 "items": 

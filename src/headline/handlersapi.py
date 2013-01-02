@@ -5,32 +5,7 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
-from commonutil import stringutil
-from configmanager import cmapi
-import globalconfig
-from contentposter import cpapi
-
-_MAX_TRY_COUNT = 5
-
-def isItemInCache(item):
-    hashkey = '.itemhash'
-    hashes = cmapi.getItemValue(hashkey, [])
-    lines = []
-    url = item.get('url')
-    if url:
-        lines.append(url)
-    title = item.get('title')
-    if title:
-        lines.append(title)
-    hvalue = stringutil.calculateHash(lines)
-    if hvalue in hashes:
-        return True
-    hashes.insert(0, hvalue)
-    hashcount = globalconfig.getMaxItemHash4Cache()
-    hashes = hashes[:hashcount]
-    cmapi.saveItem(hashkey, hashes)
-    return False
-
+from . import cpapi
 
 class PosterRequest(webapp2.RequestHandler):
     def post(self):
@@ -46,26 +21,9 @@ class PosterResponse(webapp2.RequestHandler):
         data = json.loads(self.request.body)
         datasource = data['datasource']
         items = data['items']
+        cpapi.publishItems(datasource, items)
 
-        topic = datasource.get('topic')
-        sourceSlug = '.'.join([topic, datasource.get('slug')])
-        sourcetags = datasource.get('tags')
-        posters = cpapi.getPosters(topic, sourceSlug, sourcetags)
-        newItems = []
-
-        for item in items:
-            if isItemInCache(item):
-                logging.info('Item/%s is already in cache.' % (item, ))
-                continue
-            newItems.append(item)
-
-        for poster in posters:
-            if poster.isOnlyNew():
-                poster.publish(datasource, newItems)
-            else:
-                poster.publish(datasource, items)
-
-        message = 'Publish %s to %s posters.' % (sourceSlug, len(posters), )
+        message = 'Publish %s.' % (datasource, )
         logging.info(message)
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write(message)

@@ -7,16 +7,19 @@ poster-list:
         "comsumerkey": "a", 
         "comsumersecret": "a", 
         "slug": "slug1", 
+        "name": "name1",
         "targetsource": "topic1.source1", 
         "targettag": "tag1+tag2,tag3", 
         "targettopic": "topic2", 
         "type": "twitter"
-    }, {
-        "slug": "slug1", 
+    }, 
+    {
+        "slug": "slug2", 
+        "name": "name2",
         "targetsource": "topic1.source1", 
         "targettag": "tag1+tag2,tag3", 
-        "targettopic": "topic2", 
-        "type": "site",
+        "targettopic": "topic1", 
+        "type": "site", 
         "url": "http://localhost:8085/api/headline/add/"
     }
 ]

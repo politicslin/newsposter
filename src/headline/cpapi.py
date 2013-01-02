@@ -1,24 +1,11 @@
-from configmanager import cmapi
-from .twitterposter import TwitterPoster
-from .siteposter import SitePoster
+import logging
 
-def _getPosterListKey():
-    return 'poster-list'
+from commonutil import stringutil
+import globalconfig
 
-def getAllPosters(onlyActive=True):
-    result = []
-    posters = cmapi.getItemValue(_getPosterListKey())
-    if not posters:
-        return result
-    if not onlyActive:
-        return posters
-    for poster in posters:
-        if poster.get('active', True):
-            result.append(poster)
-    return result
-
-def savePosters(posters):
-    return cmapi.saveItem(_getPosterListKey(), posters)
+from contentposter.twitterposter import TwitterPoster
+from contentposter.siteposter import SitePoster
+from . import modelapi
 
 def _matchBySource(source, targetsources):
     if targetsources:
@@ -55,12 +42,24 @@ def _getRealPoster(poster):
           )
     return None
 
-def getPosters(topic, datasource, tags):
+def getAllPosters(onlyActive):
+    result = []
+    posters = modelapi.getPosters()
+    if not posters:
+        return result
+    if not onlyActive:
+        return posters
+    for poster in posters:
+        if poster.get('active', True):
+            result.append(poster)
+    return result
+
+def _getPosters(topic, datasource, tags):
     if tags:
         tags = set(tags)
     else:
         tags = set()
-    posters = getAllPosters()
+    posters = getAllPosters(True)
     result = []
     for poster in posters:
         targettopics = poster.get('targettopic')
@@ -82,9 +81,51 @@ def getPosters(topic, datasource, tags):
     return result
 
 def getPoster(posterslug):
-    posters = getAllPosters()
+    posters = getAllPosters(False)
     for poster in posters:
         if poster.get('slug') == posterslug:
             return _getRealPoster(poster)
     return None
+
+def savePosters(posters):
+    return modelapi.savePosters(posters)
+
+def _isItemInCache(item):
+    hashes = modelapi.getItemHash()
+    lines = []
+    url = item.get('url')
+    if url:
+        lines.append(url)
+    title = item.get('title')
+    if title:
+        lines.append(title)
+    hvalue = stringutil.calculateHash(lines)
+    if hvalue in hashes:
+        return True
+    hashes.insert(0, hvalue)
+    hashcount = globalconfig.getMaxItemHash4Cache()
+    hashes = hashes[:hashcount]
+    modelapi.saveItemHash(hashes)
+    return False
+
+
+def publishItems(datasource, items):
+    topic = datasource.get('topic')
+    sourceSlug = datasource.get('slug')
+    sourcetags = datasource.get('tags')
+    posters = _getPosters(topic, sourceSlug, sourcetags)
+    newItems = []
+
+    for item in items:
+        if _isItemInCache(item):
+            logging.info('Item/%s is already in cache.' % (item, ))
+            continue
+        newItems.append(item)
+
+    for poster in posters:
+        if poster.isOnlyNew():
+            if newItems:
+                poster.publish(datasource, newItems)
+        else:
+            poster.publish(datasource, items)
 

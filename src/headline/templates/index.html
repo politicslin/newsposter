@@ -5,7 +5,7 @@
 </head>
   <body>
     <form action="/admin/poster/" method="POST">
-    <select name="selectedslug">
+    <select name="selectedslug" style="width:80px;">
       <option value="">--</option>
       {% for item in posters %}
       <option value="{{ item.slug }}" {% if item.slug == poster.slug %}selected{% endif %}>{{ forloop.counter}}. {{ item.name }}</option>
@@ -20,7 +20,7 @@
       <option value="{{ posterType }}" {% if poster.type == posterType %}selected{% endif %}>{{ posterType }}</option>
       {% endfor %}
     </select>
-    <br/>Url: <input type="text" name="url" value="poster.url" size="80"/>
+    <br/>Url: <input type="text" name="url" value="{{ poster.url }}" size="80"/>
     <br/>Access token: <input type="text" size="80" name="accesstoken"
         value="{{ poster.accesstoken }}" />
     <br/>Access secret: <input type="text" size="80" name="accesssecret"

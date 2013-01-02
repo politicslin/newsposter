@@ -3,7 +3,7 @@ import os
 from google.appengine.ext.webapp import template
 import webapp2
 
-from contentposter import cpapi
+from . import cpapi
 
 class TestPage(webapp2.RequestHandler):
     def _render(self, templateValues):
@@ -32,7 +32,7 @@ class TestPage(webapp2.RequestHandler):
         poster = cpapi.getPoster(posterSlug)
         datasouce = {'name': datasourceName}
         item = {'title': title, 'url': url}
-        message = poster.publish(datasouce, item)
+        message = poster.publish(datasouce, [item])
         return self.get(message='Message is published: %s.' % message)
 
 class AdminPage(webapp2.RequestHandler):
