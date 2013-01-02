@@ -1,5 +1,6 @@
 from configmanager import cmapi
 from .twitterposter import TwitterPoster
+from .siteposter import SitePoster
 
 def _getPosterListKey():
     return 'poster-list'
@@ -47,6 +48,10 @@ def _getRealPoster(poster):
             poster.get('comsumersecret'),
             poster.get('accesstoken'),
             poster.get('accesssecret')
+          )
+    elif poster.get('type') == 'site':
+        return SitePoster(
+            poster.get('url')
           )
     return None
 

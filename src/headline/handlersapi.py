@@ -31,18 +31,6 @@ def isItemInCache(item):
     cmapi.saveItem(hashkey, hashes)
     return False
 
-def _put2FailQueue(triedcount, posterslug, datasource, item):
-    if triedcount >= _MAX_TRY_COUNT:
-        logging.error('Failed to publish %s to %s for %s.' % (item.get('url'),
-             posterslug, datasource.get('slug')))
-        return
-    data = {
-        'posterslug': posterslug,
-        'datasource': datasource,
-        'item': item,
-        'tredcount': triedcount,
-      }
-    taskqueue.add(queue_name='default', payload=json.dumps(data), url='/poster/fail/')
 
 class PosterRequest(webapp2.RequestHandler):
     def post(self):
@@ -56,42 +44,28 @@ class PosterRequest(webapp2.RequestHandler):
 class PosterResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
-        datasouce = data['datasource']
+        datasource = data['datasource']
         items = data['items']
 
-        topic = datasouce.get('topic')
-        sourceSlug = '.'.join([topic, datasouce.get('slug')])
-        sourcetags = datasouce.get('tags')
+        topic = datasource.get('topic')
+        sourceSlug = '.'.join([topic, datasource.get('slug')])
+        sourcetags = datasource.get('tags')
         posters = cpapi.getPosters(topic, sourceSlug, sourcetags)
+        newItems = []
+
         for item in items:
             if isItemInCache(item):
                 logging.info('Item/%s is already in cache.' % (item, ))
                 continue
-            for poster in posters:
-                if not poster.publish(datasouce, item):
-                    _put2FailQueue(1, poster.slug, datasouce, item)
-        message = 'Publish %s to %s posters.' % (sourceSlug, len(posters), )
-        logging.info(message)
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write(message)
+            newItems.append(item)
 
-
-class PosterFail(webapp2.RequestHandler):
-    def post(self):
-        data = json.loads(self.request.body)
-        posterslug = data['posterslug']
-        datasource = data['datasource']
-        item = data['item']
-        tredcount = data['tredcount']
-        poster = cpapi.getPoster(posterslug)
-        if poster:
-            if poster.publish(datasource, item):
-                message = 'Publish %s to %s.' % (datasource.get('slug'), posterslug, )
+        for poster in posters:
+            if poster.isOnlyNew():
+                poster.publish(datasource, newItems)
             else:
-                _put2FailQueue(tredcount + 1, poster.slug, datasource, item)
-                message = 'Failed to publish %s to %s.' % (datasource.get('slug'), posterslug, )
-        else:
-            message = '%s is not available.' % (posterslug, )
+                poster.publish(datasource, items)
+
+        message = 'Publish %s to %s posters.' % (sourceSlug, len(posters), )
         logging.info(message)
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.out.write(message)

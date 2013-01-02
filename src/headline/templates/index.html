@@ -20,6 +20,7 @@
       <option value="{{ posterType }}" {% if poster.type == posterType %}selected{% endif %}>{{ posterType }}</option>
       {% endfor %}
     </select>
+    <br/>Url: <input type="text" name="url" value="poster.url" size="80"/>
     <br/>Access token: <input type="text" size="80" name="accesstoken"
         value="{{ poster.accesstoken }}" />
     <br/>Access secret: <input type="text" size="80" name="accesssecret"

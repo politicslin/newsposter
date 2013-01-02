@@ -3,7 +3,9 @@ import urllib2
 import oauth2 as oauth
 import json
 
-class TwitterPoster(object):
+from .baseposter import BasePoster
+
+class TwitterPoster(BasePoster):
 
     def __init__(self, slug, name, comsumerkey, comsumersecret,
                  accesstoken, accesssecret):
@@ -14,13 +16,13 @@ class TwitterPoster(object):
         self.accesstoken = accesstoken
         self.accesssecret = accesssecret
 
-    def _getContent(self, datasouce, item):
+    def _getContent(self, datasource, item):
         # max len is counted as unicode,
         # which means it can send 140 Chinese character
         maxcontentlen = 140
         reserved4url = 20
         reserved4separator = 5
-        sourcename = datasouce.get('name')
+        sourcename = datasource.get('name')
         itemtitle = item.get('title')
         if itemtitle is None:
             itemtitle = ''
@@ -31,12 +33,12 @@ class TwitterPoster(object):
             item.get('url', ''),
         )
 
-    def publish(self, datasouce, item):
+    def _publishItem(self, datasource, item):
         url = 'http://api.twitter.com/1/statuses/update.json'
         httpmethod = 'POST'
         proxyinfo = None
 
-        content = self._getContent(datasouce, item)
+        content = self._getContent(datasource, item)
         postbody = 'status=' +  urllib2.quote(content.encode('utf-8'))
 
         consumer = oauth.Consumer(key=self.comsumerkey, secret=self.comsumersecret)
@@ -67,4 +69,9 @@ class TwitterPoster(object):
         if success and responsebody:
             return responsebody
         return success
+
+    def publish(self, datasource, items):
+        for item in items:
+            self._publishItem(datasource, item)
+        return True
 

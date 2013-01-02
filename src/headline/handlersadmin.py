@@ -46,7 +46,7 @@ class AdminPage(webapp2.RequestHandler):
 
     def post(self):
         message = ''
-        posterTypes = ['twitter']
+        posterTypes = ['twitter', 'site']
         posters = cpapi.getAllPosters(onlyActive=False)
 
         action = self.request.get('action')
@@ -68,10 +68,13 @@ class AdminPage(webapp2.RequestHandler):
             poster['name'] = self.request.get('name')
             poster['active'] = bool(self.request.get('active'))
             poster['type'] = self.request.get('type')
-            poster['accesstoken'] = self.request.get('accesstoken')
-            poster['accesssecret'] = self.request.get('accesssecret')
-            poster['comsumerkey'] = self.request.get('comsumerkey')
-            poster['comsumersecret'] = self.request.get('comsumersecret')
+            if poster['type'] == 'site':
+                poster['url'] = self.request.get('url')
+            elif poster['type'] == 'twitter':
+                poster['accesstoken'] = self.request.get('accesstoken')
+                poster['accesssecret'] = self.request.get('accesssecret')
+                poster['comsumerkey'] = self.request.get('comsumerkey')
+                poster['comsumersecret'] = self.request.get('comsumersecret')
             poster['targetsource'] = self.request.get('targetsource')
             poster['targettag'] = self.request.get('targettag')
             poster['targettopic'] = self.request.get('targettopic')

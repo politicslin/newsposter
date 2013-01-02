@@ -20,7 +20,6 @@ app = webapp2.WSGIApplication([
 ('/configitem/', configmanager.handlers.MainPage),
 ('/api/poster/request/', headline.handlersapi.PosterRequest),
 ('/poster/response/', headline.handlersapi.PosterResponse),
-('/poster/fail/', headline.handlersapi.PosterFail),
 ('/admin/poster/test/', headline.handlersadmin.TestPage),
 ('/admin/poster/', headline.handlersadmin.AdminPage),
 ],
