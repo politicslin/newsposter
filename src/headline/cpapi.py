@@ -14,6 +14,8 @@ def _matchBySource(source, targetsources):
 
 def _matchByTopic(topic, targettopics):
     if targettopics:
+        if targettopics == 'all':
+            return True
         return topic in targettopics.split(',')
     return False
 
