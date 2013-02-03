@@ -1,7 +1,6 @@
 import logging
 
 from commonutil import stringutil
-import globalconfig
 
 from contentposter.twitterposter import TwitterPoster
 from contentposter.siteposter import SitePoster
@@ -92,42 +91,23 @@ def getPoster(posterslug):
 def savePosters(posters):
     return modelapi.savePosters(posters)
 
-def _isItemInCache(item):
-    hashes = modelapi.getItemHash()
-    lines = []
-    url = item.get('url')
-    if url:
-        lines.append(url)
-    title = item.get('title')
-    if title:
-        lines.append(title)
-    hvalue = stringutil.calculateHash(lines)
-    if hvalue in hashes:
-        return True
-    hashes.insert(0, hvalue)
-    hashcount = globalconfig.getMaxItemHash4Cache()
-    hashes = hashes[:hashcount]
-    modelapi.saveItemHash(hashes)
-    return False
-
+def _populatedDuplicatedFlag(item):
+    itemUrl = item.get('url')
+    if not itemUrl:
+        return
+    if modelapi.isPageInHistory(itemUrl):
+        item['duplicated'] = True
+    modelapi.savePageHistory(itemUrl)
 
 def publishItems(datasource, items):
     topic = datasource.get('topic')
     sourceSlug = datasource.get('slug')
     sourcetags = datasource.get('tags')
     posters = _getPosters(topic, sourceSlug, sourcetags)
-    newItems = []
 
     for item in items:
-        if _isItemInCache(item):
-            logging.info('Item/%s is already in cache.' % (item, ))
-            continue
-        newItems.append(item)
+        _populatedDuplicatedFlag(item)
 
     for poster in posters:
-        if poster.isOnlyNew():
-            if newItems:
-                poster.publish(datasource, newItems)
-        else:
-            poster.publish(datasource, items)
+        poster.publish(datasource, items)
 

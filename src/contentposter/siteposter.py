@@ -12,9 +12,6 @@ class SitePoster(BasePoster):
     def __init__(self, url):
         self.url = url
 
-    def isOnlyNew(self):
-        return False
-
     def publish(self, datasource, items):
         data = {
                 'datasource': datasource,

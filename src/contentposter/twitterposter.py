@@ -72,6 +72,8 @@ class TwitterPoster(BasePoster):
 
     def publish(self, datasource, items):
         for item in items:
+            if item.get('duplicated'):
+                continue
             self._publishItem(datasource, item)
         return True
 

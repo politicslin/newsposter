@@ -1,3 +1,5 @@
+import datetime
+
 from configmanager import cmapi
 
 import configmanager.models
@@ -16,15 +18,33 @@ def getPosters():
 def savePosters(posters):
     return cmapi.saveItem(_getPosterListKey(), posters)
 
-def _getItemHashesKey():
-    return 'item.hash'
+def isPageInHistory(url):
+    pages = cmapi.getItemValue('page.history', [], modelname=RuntimeStatus)
+    for page in pages:
+        if page.get('url') == url:
+            return True
+    return False
 
-def getItemHash():
-    key = _getItemHashesKey()
-    return cmapi.getItemValue(key, [], modelname=RuntimeStatus)
-
-def saveItemHash(hashes):
-    key = _getItemHashesKey()
-    return cmapi.saveItem(key, hashes, modelname=RuntimeStatus)
-
+def savePageHistory(url):
+    pages = cmapi.getItemValue('page.history', [], modelname=RuntimeStatus)
+    found = None
+    for page in pages:
+        if page.get('url') == url:
+            found = page
+            break
+    if found:
+        found['count'] += 1
+    else:
+        found = {}
+        found['count'] = 1
+        found['url'] = url
+        pages.append(found)
+    found['updated'] = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
+    pages.sort(key=lambda page: page['updated'], reverse=True)
+    pages.sort(key=lambda page: page['count'], reverse=True)
+    MAX_COUNT = 1000
+    RESET_COUNT = 200
+    if len(pages) > MAX_COUNT:
+        pages = pages[:RESET_COUNT]
+    cmapi.saveItem('page.history', pages, modelname=RuntimeStatus)
 
