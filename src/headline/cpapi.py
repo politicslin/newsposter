@@ -92,7 +92,10 @@ def savePosters(posters):
     return modelapi.savePosters(posters)
 
 def _populatedDuplicatedFlag(item):
-    itemUrl = item.get('url')
+    monitorPage = item.get('monitor')
+    if not monitorPage:
+        return
+    itemUrl = monitorPage.get('url')
     if not itemUrl:
         return
     if modelapi.isPageInHistory(itemUrl):
