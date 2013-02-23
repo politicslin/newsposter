@@ -5,6 +5,8 @@ from google.appengine.api import taskqueue
 
 import webapp2
 
+from commonutil import networkutil
+
 from . import cpapi
 
 class PosterRequest(webapp2.RequestHandler):
@@ -19,6 +21,15 @@ class PosterRequest(webapp2.RequestHandler):
 class PosterResponse(webapp2.RequestHandler):
     def post(self):
         data = json.loads(self.request.body)
+
+        uuid = data.get('uuid')
+        if networkutil.isUuidHandled(uuid):
+            message = 'PosterResponse: %s is already handled.' % (uuid, )
+            logging.warn(message)
+            self.response.out.write(message)
+            return
+        networkutil.updateUuids(uuid)
+
         datasource = data['datasource']
         items = data['items']
         cpapi.publishItems(datasource, items)

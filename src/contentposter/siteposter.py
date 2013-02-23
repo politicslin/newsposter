@@ -1,11 +1,11 @@
 import logging
-import urllib2
 
-import jsonpickle
+from commonutil import networkutil
 
 from .baseposter import BasePoster
 
 _URL_TIMEOUT = 30
+_POST_TRY_COUNT = 3
 
 class SitePoster(BasePoster):
 
@@ -17,13 +17,7 @@ class SitePoster(BasePoster):
                 'datasource': datasource,
                 'items': items,
             }
-        try:
-            f = urllib2.urlopen(self.url, jsonpickle.encode(data),
-                                timeout=_URL_TIMEOUT)
-            f.read()
-            f.close()
-        except Exception:
-            message = 'Failed to publish data to "%s".' % (self.url, )
-            logging.exception(message)
-        return True
+        success = networkutil.postData(self.url, data,
+                    trycount=_POST_TRY_COUNT, timeout=_URL_TIMEOUT)
+        return success
 
