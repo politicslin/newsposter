@@ -23,7 +23,11 @@ class TwitterPoster(BasePoster):
         reserved4url = 20
         reserved4separator = 5
         sourcename = datasource.get('name')
-        itemtitle = item.get('title')
+        itemtitle = None
+        if 'monitor' in item:
+            itemtitle = item['monitor'].get('title')
+        if not itemtitle and 'editor' in item:
+            itemtitle = item['editor'].get('title')
         if itemtitle is None:
             itemtitle = ''
         maxTitleLen = maxcontentlen - len(sourcename) - reserved4url - reserved4separator
