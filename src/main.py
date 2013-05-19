@@ -4,8 +4,6 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'library'))
 
-import configmanager.handlers
-
 import headline.handlersapi
 import headline.handlersadmin
 
@@ -17,7 +15,6 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/configitem/', configmanager.handlers.MainPage),
 ('/api/poster/request/', headline.handlersapi.PosterRequest),
 ('/poster/response/', headline.handlersapi.PosterResponse),
 ('/admin/poster/test/', headline.handlersadmin.TestPage),

@@ -4,7 +4,7 @@ from commonutil import stringutil
 
 from contentposter.twitterposter import TwitterPoster
 from contentposter.siteposter import SitePoster
-from . import modelapi
+from . import models
 
 def _matchBySource(source, targetsources):
     if targetsources:
@@ -45,7 +45,7 @@ def _getRealPoster(poster):
 
 def getAllPosters(onlyActive):
     result = []
-    posters = modelapi.getPosters()
+    posters = models.getPosters()
     if not posters:
         return result
     if not onlyActive:
@@ -89,7 +89,7 @@ def getPoster(posterslug):
     return None
 
 def savePosters(posters):
-    return modelapi.savePosters(posters)
+    return models.savePosters(posters)
 
 def _populatedDuplicatedFlag(item):
     monitorPage = item.get('monitor')
@@ -98,9 +98,9 @@ def _populatedDuplicatedFlag(item):
     itemUrl = monitorPage.get('url')
     if not itemUrl:
         return
-    if modelapi.isPageInHistory(itemUrl):
+    if models.isPageInHistory(itemUrl):
         item['duplicated'] = True
-    modelapi.savePageHistory(itemUrl)
+    models.savePageHistory(itemUrl)
 
 def publishItems(datasource, items):
     topic = datasource.get('topic')

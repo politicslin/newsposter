@@ -2,13 +2,6 @@ import datetime
 
 from configmanager import cmapi
 
-import configmanager.models
-
-class RuntimeStatus(configmanager.models.ConfigItem):
-    pass
-
-cmapi.registerModel(RuntimeStatus)
-
 def _getPosterListKey():
     return 'poster-list'
 
@@ -19,14 +12,14 @@ def savePosters(posters):
     return cmapi.saveItem(_getPosterListKey(), posters)
 
 def isPageInHistory(url):
-    pages = cmapi.getItemValue('page.history', [], modelname=RuntimeStatus)
+    pages = cmapi.getItemValue('page.history', [], modelname='RunStatus')
     for page in pages:
         if page.get('url') == url:
             return True
     return False
 
 def savePageHistory(url):
-    pages = cmapi.getItemValue('page.history', [], modelname=RuntimeStatus)
+    pages = cmapi.getItemValue('page.history', [], modelname='RunStatus')
     found = None
     for page in pages:
         if page.get('url') == url:
@@ -46,5 +39,5 @@ def savePageHistory(url):
     RESET_COUNT = 200
     if len(pages) > MAX_COUNT:
         pages = pages[:RESET_COUNT]
-    cmapi.saveItem('page.history', pages, modelname=RuntimeStatus)
+    cmapi.saveItem('page.history', pages, modelname='RunStatus')
 
