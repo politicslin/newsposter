@@ -3,7 +3,7 @@ import datetime
 from configmanager import cmapi
 
 def _getPosterListKey():
-    return 'poster-list'
+    return 'routers'
 
 def getPosters():
     return cmapi.getItemValue(_getPosterListKey(), [])
