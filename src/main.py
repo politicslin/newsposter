@@ -4,8 +4,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'library'))
 
-import headline.handlersapi
-import headline.handlersadmin
+import router.handlersapi
+import router.handlersadmin
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -15,10 +15,10 @@ class MainPage(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 ('/', MainPage),
-('/api/poster/request/', headline.handlersapi.PosterRequest),
-('/poster/response/', headline.handlersapi.PosterResponse),
-('/admin/poster/test/', headline.handlersadmin.TestPage),
-('/admin/poster/', headline.handlersadmin.AdminPage),
+('/api/poster/request/', router.handlersapi.PosterRequest),
+('/poster/response/', router.handlersapi.PosterResponse),
+('/admin/poster/test/', router.handlersadmin.TestPage),
+('/admin/poster/', router.handlersadmin.AdminPage),
 ],
                               debug=True)
 
