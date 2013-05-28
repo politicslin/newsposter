@@ -20,5 +20,5 @@ app = webapp2.WSGIApplication([
 ('/admin/poster/test/', router.handlersadmin.TestPage),
 ('/admin/poster/', router.handlersadmin.AdminPage),
 ],
-                              debug=True)
+debug=os.environ['SERVER_SOFTWARE'].startswith('Dev'))
 
