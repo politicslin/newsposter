@@ -1,31 +1,18 @@
 import logging
 
-from commonutil import stringutil
+from commonutil import collectionutil, stringutil
 
 from contentposter.twitterposter import TwitterPoster
 from contentposter.siteposter import SitePoster
 from . import models
 
-def _matchBySource(source, targetsources):
-    if targetsources:
-        return source in targetsources.split(',')
-    return False
-
-def _matchByTopic(topic, targettopics):
-    if targettopics:
-        if targettopics == 'all':
-            return True
-        return topic in targettopics.split(',')
-    return False
-
-def _matchByTag(tags, targettags):
-    if targettags:
-        items = targettags.split(',')
-        for item in items:
-            grouptags = set(item.split('+'))
-            if grouptags.issubset(tags):
-                return True
-    return False
+def _matchByTag(pageTags, targettags):
+    matched = False
+    for tag in targettags:
+        if collectionutil.fullContains(pageTags, tag.split('+')):
+            matched = True
+            break
+    return matched
 
 def _getRealPoster(poster):
     if poster.get('type') == 'twitter':
@@ -63,18 +50,10 @@ def _getPosters(topic, datasource, tags):
     posters = getAllPosters(True)
     result = []
     for poster in posters:
-        targettopics = poster.get('targettopic')
         matched = False
-        if _matchByTopic(topic, targettopics):
+        targettags = poster.get('tags')
+        if not targettags or _matchByTag(tags, targettags):
             matched = True
-        if not matched:
-            targetsources = poster.get('targetsource')
-            if _matchBySource(datasource, targetsources):
-                matched = True
-        if not matched:
-            targettags = poster.get('targettag')
-            if _matchByTag(tags, targettags):
-                matched = True
         if matched:
             realposter = _getRealPoster(poster)
             if realposter:
